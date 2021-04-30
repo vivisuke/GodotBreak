@@ -84,3 +84,4 @@ shape = SubResource( 3 )
 
 [node name="Ball" parent="." instance=ExtResource( 1 )]
 position = Vector2( 250, 680 )
+z_index = 1
