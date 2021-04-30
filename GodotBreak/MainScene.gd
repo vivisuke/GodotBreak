@@ -15,9 +15,10 @@ var BallTail = load("res://BallTail.tscn")
 func _ready():
 	pass
 func _input(event):
-	if event is InputEventKey && event.pressed && event.scancode == KEY_ESCAPE:
-		pause = !pause
-		started = true
+	if event is InputEventKey && event.pressed:
+		if event.scancode == KEY_ESCAPE || event.scancode == KEY_SPACE:
+			pause = !pause
+			started = true
 	pass
 func _physics_process(delta):
 	var dx = int(Input.is_action_pressed("ui_right")) - int(Input.is_action_pressed("ui_left"))
