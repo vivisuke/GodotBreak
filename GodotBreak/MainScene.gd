@@ -28,8 +28,9 @@ func _physics_process(delta):
 	add_child(bt)
 	btQueue.push_back(bt)
 	for b in btQueue:
-		b.modulate.a -= 0.025
-	while btQueue[0].modulate.a <= 0:
+		#b.modulate.a -= 0.025
+		b.modulate.a *= 0.95
+	while btQueue[0].modulate.a <= 0.0001:
 		btQueue.pop_front()
 	var collide = $Ball.move_and_collide(vel*delta)
 	if collide != null:
