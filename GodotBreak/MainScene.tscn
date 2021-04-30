@@ -87,6 +87,7 @@ shape = SubResource( 3 )
 
 [node name="Ball" type="KinematicBody2D" parent="."]
 position = Vector2( 250, 680 )
+z_index = 1
 
 [node name="Sprite" type="Sprite" parent="Ball"]
 modulate = Color( 1, 1, 1, 0.501961 )
@@ -94,3 +95,9 @@ texture = ExtResource( 1 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ball"]
 shape = SubResource( 4 )
+
+[node name="Timer" type="Timer" parent="Ball"]
+wait_time = 0.01
+autostart = true
+
+[connection signal="timeout" from="Ball/Timer" to="." method="_on_BallTimer_timeout"]

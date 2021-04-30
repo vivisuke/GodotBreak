@@ -22,6 +22,12 @@ func _physics_process(delta):
 		$Pad.move_and_collide(Vector2(dx*PAD_MOVE_UNIT, 0) * delta)
 	if pause:
 		return
+	var collide = $Ball.move_and_collide(vel*delta)
+	if collide != null:
+		print(collide.collider.name)
+		vel = vel.bounce(collide.normal)
+	pass
+func _on_BallTimer_timeout():
 	var bt = BallTail.instance()
 	bt.position = $Ball.position
 	bt.modulate.a = 1.0
@@ -32,8 +38,3 @@ func _physics_process(delta):
 		b.modulate.a *= 0.95
 	while btQueue[0].modulate.a <= 0.0001:
 		btQueue.pop_front()
-	var collide = $Ball.move_and_collide(vel*delta)
-	if collide != null:
-		print(collide.collider.name)
-		vel = vel.bounce(collide.normal)
-	pass
