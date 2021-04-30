@@ -20,6 +20,11 @@ func _physics_process(delta):
 	var dx = int(Input.is_action_pressed("ui_right")) - int(Input.is_action_pressed("ui_left"))
 	if dx != 0:
 		$Pad.move_and_collide(Vector2(dx*PAD_MOVE_UNIT, 0) * delta)
+	if $Ball.position.y >= SCREEN_HEIGHT:
+		pause = true
+		$Ball.position = $Pad.position
+		$Ball.position.y -= 20
+		vel = Vector2(200, -200)	# 右上方向
 	if pause:
 		return
 	var collide = $Ball.move_and_collide(vel*delta)
@@ -28,6 +33,8 @@ func _physics_process(delta):
 		vel = vel.bounce(collide.normal)
 	pass
 func _on_BallTimer_timeout():
+	if pause:
+		return
 	var bt = BallTail.instance()
 	bt.position = $Ball.position
 	bt.modulate.a = 1.0
