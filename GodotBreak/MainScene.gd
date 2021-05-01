@@ -12,7 +12,8 @@ const BALL_SPEED = 300
 var pause : bool = true
 var started  : bool = false
 var vel = Vector2(BALL_SPEED, -BALL_SPEED)	# 右上方向
-var btQueue = []
+var btQueue = []	# for ボール軌跡
+var fiQueue = []	# 落下中アイテム
 
 var rng = RandomNumberGenerator.new()
 var BlockYellow = load("res://BlockYellow.tscn")
@@ -54,6 +55,14 @@ func _physics_process(delta):
 		vel = Vector2(BALL_SPEED, -BALL_SPEED)	# 右上方向
 	if pause:
 		return
+	for ix in range(fiQueue.size()):
+		if fiQueue[ix] != null:
+			#print(fiQueue[ix])
+			if fiQueue[ix].position.y >= SCREEN_HEIGHT:
+				fiQueue[ix].queue_free()
+				fiQueue[ix] = null
+	while !fiQueue.empty() && fiQueue[0] == null:
+		fiQueue.pop_front()
 	var collide = $Ball.move_and_collide(vel*delta)
 	if collide != null:
 		#print(collide.collider.name)
@@ -64,6 +73,7 @@ func _physics_process(delta):
 				var q = Question.instance()
 				q.position = $Ball.position
 				add_child(q)
+				fiQueue.push_back(q)
 	pass
 func _on_BallTimer_timeout():
 	if !pause:
