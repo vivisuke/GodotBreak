@@ -116,3 +116,10 @@ func _on_Pad_body_entered(body):
 		$Pad.position = Vector2(-100, -100)
 		pad = $PadCircle
 		padRadius = PAD_CIRCLE_RADIUS
+func _on_PadCircle_body_entered(body):
+	if body.name.find("Question") >= 0:
+		remove_question(body)
+		$Pad.position = $PadCircle.position
+		$PadCircle.position = Vector2(-100, -100)
+		pad = $Pad
+		padRadius = PAD_RADIUS
