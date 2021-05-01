@@ -34,10 +34,15 @@ func _ready():
 	pass
 func _input(event):
 	if event is InputEventKey && event.pressed:
-		if event.scancode == KEY_ESCAPE || event.scancode == KEY_SPACE:
+		if event.scancode == KEY_ESCAPE || (pause && event.scancode == KEY_SPACE):
 			pause = !pause
 			started = true
 	pass
+func is_collide_with_pad(lst):
+	for body in lst:
+		if body.name.left(3) == "Pad":
+			return true
+	return false
 func _physics_process(delta):
 	var dx = int(Input.is_action_pressed("ui_right")) - int(Input.is_action_pressed("ui_left"))
 	if dx != 0:
@@ -61,6 +66,12 @@ func _physics_process(delta):
 			if fiQueue[ix].position.y >= SCREEN_HEIGHT:
 				fiQueue[ix].queue_free()
 				fiQueue[ix] = null
+			else:
+				var lst = fiQueue[ix].get_colliding_bodies()
+				if !lst.empty():
+					if is_collide_with_pad(lst):
+						fiQueue[ix].queue_free()
+						fiQueue[ix] = null
 	while !fiQueue.empty() && fiQueue[0] == null:
 		fiQueue.pop_front()
 	var collide = $Ball.move_and_collide(vel*delta)
@@ -86,3 +97,14 @@ func _on_BallTimer_timeout():
 		b.modulate.a *= 0.95
 	while !btQueue.empty() && btQueue[0].modulate.a <= 0.0001:
 		btQueue.pop_front()
+
+func remove_question(body):
+	for ix in range(fiQueue.size()):
+		if fiQueue[ix] == body:
+			fiQueue[ix].queue_free()
+			fiQueue[ix] = null
+			return
+func _on_Pad_body_entered(body):
+	#print(body)
+	remove_question(body)
+	pass # Replace with function body.
