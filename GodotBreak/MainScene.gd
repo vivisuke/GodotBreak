@@ -7,11 +7,14 @@ const BLOCK_WIDTH = 46
 const BLOCK_HEIGHT = 16
 const BLOCK_Y0 = 100
 const PAD_MOVE_UNIT = 400
+const PAD_RADIUS = 12
+const PAD_CIRCLE_RADIUS = 48
 const BALL_SPEED = 300
 
 var pause : bool = true
 var started  : bool = false
 onready var pad = $Pad
+var padRadius = PAD_RADIUS
 var vel = Vector2(BALL_SPEED, -BALL_SPEED)	# 右上方向
 var btQueue = []	# for ボール軌跡
 var fiQueue = []	# 落下中アイテム
@@ -57,7 +60,7 @@ func _physics_process(delta):
 		pause = true
 		started = false
 		$Ball.position = pad.position
-		$Ball.position.y -= 20
+		$Ball.position.y -= (padRadius + 8)
 		vel = Vector2(BALL_SPEED, -BALL_SPEED)	# 右上方向
 	if pause:
 		return
@@ -112,3 +115,4 @@ func _on_Pad_body_entered(body):
 		$PadCircle.position = $Pad.position
 		$Pad.position = Vector2(-100, -100)
 		pad = $PadCircle
+		padRadius = PAD_CIRCLE_RADIUS
