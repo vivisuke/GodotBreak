@@ -2,8 +2,8 @@ extends Node2D
 
 const SCREEN_WIDTH = 500
 const SCREEN_HEIGHT = 800
-const FRAME_WIDTH = 22
-const BLOCK_WIDTH = 38
+const FRAME_WIDTH = 20
+const BLOCK_WIDTH = 46
 const BLOCK_HEIGHT = 16
 const BLOCK_Y0 = 100
 const PAD_MOVE_UNIT = 400
@@ -24,7 +24,7 @@ var Question = load("res://Question.tscn")
 func setup_blocks():
 	for y in range(6):
 		var py = y * BLOCK_HEIGHT + BLOCK_Y0
-		for x in range(12):
+		for x in range(10):
 			var px = x * BLOCK_WIDTH + FRAME_WIDTH
 			var blk = BlockYellow.instance()
 			blk.position = Vector2(px, py)

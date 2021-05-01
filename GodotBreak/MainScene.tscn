@@ -6,7 +6,7 @@
 [ext_resource path="res://images/Pad96x96.png" type="Texture" id=4]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 11, 400 )
+extents = Vector2( 10, 400 )
 
 [sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 250, 30 )
@@ -33,7 +33,7 @@ __meta__ = {
 }
 
 [node name="ColorRect" type="ColorRect" parent="LeftWall"]
-margin_right = 22.0
+margin_right = 20.0
 margin_bottom = 800.0
 color = Color( 0.501961, 0.501961, 0.501961, 1 )
 __meta__ = {
@@ -41,7 +41,7 @@ __meta__ = {
 }
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="LeftWall"]
-position = Vector2( 11, 400 )
+position = Vector2( 10, 400 )
 shape = SubResource( 1 )
 
 [node name="RightWall" type="StaticBody2D" parent="."]
@@ -51,7 +51,7 @@ __meta__ = {
 }
 
 [node name="ColorRect" type="ColorRect" parent="RightWall"]
-margin_right = 22.0
+margin_right = 20.0
 margin_bottom = 800.0
 color = Color( 0.501961, 0.501961, 0.501961, 1 )
 __meta__ = {
@@ -59,7 +59,7 @@ __meta__ = {
 }
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RightWall"]
-position = Vector2( 11, 400 )
+position = Vector2( 10, 400 )
 shape = SubResource( 1 )
 
 [node name="UpperWall" type="StaticBody2D" parent="."]
