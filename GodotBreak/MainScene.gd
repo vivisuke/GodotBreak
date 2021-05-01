@@ -11,6 +11,7 @@ const BALL_SPEED = 300
 
 var pause : bool = true
 var started  : bool = false
+onready var pad = $Pad
 var vel = Vector2(BALL_SPEED, -BALL_SPEED)	# 右上方向
 var btQueue = []	# for ボール軌跡
 var fiQueue = []	# 落下中アイテム
@@ -40,22 +41,22 @@ func _input(event):
 	pass
 func is_collide_with_pad(lst):
 	for body in lst:
-		if body.name.left(3) == "Pad":
+		if body.name.find("Pad") >= 0:
 			return true
 	return false
 func _physics_process(delta):
 	var dx = int(Input.is_action_pressed("ui_right")) - int(Input.is_action_pressed("ui_left"))
 	if dx != 0:
-		var obj = $Pad.move_and_collide(Vector2(dx*PAD_MOVE_UNIT, 0) * delta)
-		if obj != null:
-			print(obj)
-			pass
+		var obj = pad.move_and_collide(Vector2(dx*PAD_MOVE_UNIT, 0) * delta)
+		#if obj != null:
+		#	#print(obj)
+		#	pass
 	if !started:	# ボールが飛翔中でない場合
-		$Ball.position.x = $Pad.position.x
+		$Ball.position.x = pad.position.x
 	if $Ball.position.y >= SCREEN_HEIGHT:
 		pause = true
 		started = false
-		$Ball.position = $Pad.position
+		$Ball.position = pad.position
 		$Ball.position.y -= 20
 		vel = Vector2(BALL_SPEED, -BALL_SPEED)	# 右上方向
 	if pause:
@@ -78,9 +79,9 @@ func _physics_process(delta):
 	if collide != null:
 		#print(collide.collider.name)
 		vel = vel.bounce(collide.normal)
-		if collide.collider.name.left(6) == "@Block":	# ブロックを壊した場合
+		if collide.collider.name.find("Block") >= 0:	# ブロックを壊した場合
 			collide.collider.queue_free()
-			if rng.randi_range(0, 2) == 0:
+			if fiQueue.size() < 2 && rng.randi_range(0, 2) == 0:
 				var q = Question.instance()
 				q.position = $Ball.position
 				add_child(q)
@@ -94,7 +95,7 @@ func _on_BallTimer_timeout():
 		add_child(bt)
 		btQueue.push_back(bt)
 	for b in btQueue:
-		b.modulate.a *= 0.95
+		b.modulate.a *= 0.9
 	while !btQueue.empty() && btQueue[0].modulate.a <= 0.0001:
 		btQueue.pop_front()
 
@@ -105,6 +106,9 @@ func remove_question(body):
 			fiQueue[ix] = null
 			return
 func _on_Pad_body_entered(body):
-	#print(body)
-	remove_question(body)
-	pass # Replace with function body.
+	print(body.name)
+	if body.name.find("Question") >= 0:
+		remove_question(body)
+		$PadCircle.position = $Pad.position
+		$Pad.position = Vector2(-100, -100)
+		pad = $PadCircle
