@@ -6,6 +6,8 @@ const FRAME_WIDTH = 20
 const BLOCK_WIDTH = 46
 const BLOCK_HEIGHT = 16
 const BLOCK_Y0 = 100
+const BLOCK_N_HORZ = 10
+const BLOCK_N_VERT = 6
 const PAD_MOVE_UNIT = 400
 const PAD_RADIUS = 12
 const PAD_CIRCLE_RADIUS = 48
@@ -13,7 +15,9 @@ const BALL_SPEED = 300
 
 var pause : bool = true
 var started  : bool = false
+var rot = 0.0
 onready var pad = $Pad
+var nBlocks = 0		# 残りブロック数
 var padRadius = PAD_RADIUS
 var vel = Vector2(BALL_SPEED, -BALL_SPEED)	# 右上方向
 var btQueue = []	# for ボール軌跡
@@ -24,10 +28,11 @@ var BlockYellow = load("res://BlockYellow.tscn")
 var BallTail = load("res://BallTail.tscn")
 var Question = load("res://Question.tscn")
 
-func setup_blocks():
-	for y in range(6):
+func setup_blocks():	# ブロック初期化
+	nBlocks = BLOCK_N_HORZ * BLOCK_N_VERT
+	for y in range(BLOCK_N_VERT):
 		var py = y * BLOCK_HEIGHT + BLOCK_Y0
-		for x in range(10):
+		for x in range(BLOCK_N_HORZ):
 			var px = x * BLOCK_WIDTH + FRAME_WIDTH
 			var blk = BlockYellow.instance()
 			blk.position = Vector2(px, py)
@@ -36,6 +41,11 @@ func _ready():
 	randomize()
 	setup_blocks()
 	pass
+func init():
+	pause = true
+	started = false
+	setup_blocks()
+	
 func _input(event):
 	if event is InputEventKey && event.pressed:
 		if event.scancode == KEY_ESCAPE || (pause && event.scancode == KEY_SPACE):
@@ -48,6 +58,7 @@ func is_collide_with_pad(lst):
 			return true
 	return false
 func _physics_process(delta):
+	$Pad.rotation += 5*delta
 	var dx = int(Input.is_action_pressed("ui_right")) - int(Input.is_action_pressed("ui_left"))
 	if dx != 0:
 		var obj = pad.move_and_collide(Vector2(dx*PAD_MOVE_UNIT, 0) * delta)
@@ -56,7 +67,7 @@ func _physics_process(delta):
 		#	pass
 	if !started:	# ボールが飛翔中でない場合
 		$Ball.position.x = pad.position.x
-	if $Ball.position.y >= SCREEN_HEIGHT:
+	if $Ball.position.y >= SCREEN_HEIGHT:	# ボールが画面外
 		pause = true
 		started = false
 		$Ball.position = pad.position
@@ -64,7 +75,7 @@ func _physics_process(delta):
 		vel = Vector2(BALL_SPEED, -BALL_SPEED)	# 右上方向
 	if pause:
 		return
-	for ix in range(fiQueue.size()):
+	for ix in range(fiQueue.size()):	# 落下アイテム処理
 		if fiQueue[ix] != null:
 			#print(fiQueue[ix])
 			if fiQueue[ix].position.y >= SCREEN_HEIGHT:
@@ -78,17 +89,22 @@ func _physics_process(delta):
 						fiQueue[ix] = null
 	while !fiQueue.empty() && fiQueue[0] == null:
 		fiQueue.pop_front()
+	vel.y += 0.1		# 水平移動を始めた場合への対処
 	var collide = $Ball.move_and_collide(vel*delta)
 	if collide != null:
 		#print(collide.collider.name)
 		vel = vel.bounce(collide.normal)
 		if collide.collider.name.find("Block") >= 0:	# ブロックを壊した場合
 			collide.collider.queue_free()
-			if fiQueue.size() < 2 && rng.randi_range(0, 2) == 0:
+			if fiQueue.size() < 2 && rng.randi_range(0, 2) == 0:	# 落下アイテム
 				var q = Question.instance()
 				q.position = $Ball.position
 				add_child(q)
 				fiQueue.push_back(q)
+			nBlocks -= 1
+			print("nBlocks = ", nBlocks)
+			if nBlocks == 0:
+				init()
 	pass
 func _on_BallTimer_timeout():
 	if !pause:
