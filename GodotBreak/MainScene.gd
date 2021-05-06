@@ -22,6 +22,7 @@ enum {
 
 var pause : bool = true
 var started  : bool = false
+var score = 0
 var rot = 0.0
 onready var pad = $Pad
 var nBlocks = 0		# 残りブロック数
@@ -89,7 +90,9 @@ func change_pad():
 		pad = $PadCircle
 		padRadius = PAD_CIRCLE_RADIUS
 		return
-	
+func updateScoreLabel():
+	var txt = "%05d" % score
+	$ScoreLabel.text = txt
 func _physics_process(delta):
 	#$Pad.rotation += 5*delta
 	var dx = int(Input.is_action_pressed("ui_right")) - int(Input.is_action_pressed("ui_left"))
@@ -139,6 +142,8 @@ func _physics_process(delta):
 				fiQueue.push_back(q)
 			nBlocks -= 1
 			#print("nBlocks = ", nBlocks)
+			score += 10
+			updateScoreLabel()
 			if nBlocks == 0:
 				init()
 	pass
