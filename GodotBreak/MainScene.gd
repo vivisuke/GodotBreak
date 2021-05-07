@@ -132,7 +132,13 @@ func _physics_process(delta):
 	var collide = $Ball.move_and_collide(vel*delta)
 	if collide != null:
 		#print(collide.collider.name)
+		#print("normal = ", collide.normal)
 		vel = vel.bounce(collide.normal)
+		if collide.normal == Vector2(0, -1) && collide.collider.name.find("Pad") >= 0:
+			var dx2 = int(Input.is_action_pressed("ui_right")) - int(Input.is_action_pressed("ui_left"))
+			if dx2 != 0:
+				if dx2 < 0 && vel.x > 0 || dx2 > 0 && vel.x < 0:
+					vel.x = -vel.x
 		if collide.collider.name.find("Block") >= 0:	# ブロックを壊した場合
 			collide.collider.queue_free()
 			if fiQueue.size() < 2 && rng.randi_range(0, 2) == 0:	# 落下アイテム
